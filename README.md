@@ -23,10 +23,15 @@ Cypress:
 * Because you write component tests via unit-test libraries blindly.
 
 ## Why not to use cypress-react-unit-test then? Why do we need Storybook?
-Cypress has some tricky architecture. It runs in two iframes and sometimes it limits you. Imagine that you have a component to test that should look at document.activeElement. This reference in Cypress test run always will be null (because of iframes limitations or implementation issues).
-So it is not a time and a lot of work should be done to use it freely.
+I have no doubts - it is our future to test components.
+
+But now...
+It has some tricky architecture that runs component bundle and environment in two iframes. And sometimes it limits you. 
+Example: Imagine that you have a component to test that should look at document.activeElement. This reference in Cypress test run will always point at document.body (because of iframes limitations or implementation issues).
+Also it has a lot of work to be done. 
+Hope that Gleb Bahmutov and the Cypress team will make it worked 🤞
 
 ## Should I migrate all the tests that written on Jest / React Testing Library?
-* If you primarly use tests as a development environment - Yes!
+* If you use tests as a development environment - Yes!
 * If you look at tests as at documentation - Yes.
 * If you really write unit-tests to cover things that too close to implementation and react-lifecycle - ... i don't know. I haven't been writing such a code. Are you sure about the following the S-principle of SOLID? Maybe that code should be extracted and tested accordingly?
