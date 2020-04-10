@@ -31,27 +31,10 @@ context('<Datepicker />', () => {
             });
     });
 
-    // Totally optional helper to test multiple props with state. JFYI.
-    const DatepickerTestWrapper = ({ placeholderText, selected, win }) => {
-
-        // About setState:
-        // You can put setState reference in closure to have an access in test-cases (if needed).
-        // It works (100% works with classes) but not recommended if you test the component from user point of view.
-        // If you do, do it clearly according to the test logic.
-
-        return (
-            <win.Datepicker
-                placeholderText={placeholderText}
-                selected={selected}
-                dateFormat="dd.MM.yyyy"
-            />
-        );
-    };
-
     it('renders text field.', () => {
         cy.window().then((win) => {
             ReactDOM.render(
-                <DatepickerTestWrapper win={win} />,
+                <win.Datepicker />,
                 win.document.querySelector(rootToMountSelector)
             );
         });
@@ -66,9 +49,8 @@ context('<Datepicker />', () => {
 
         cy.window().then((win) => {
             ReactDOM.render(
-                <DatepickerTestWrapper
+                <win.Datepicker
                     placeholderText={desiredPlaceholder}
-                    win={win}
                 />,
                 win.document.querySelector(rootToMountSelector)
             );
@@ -85,9 +67,9 @@ context('<Datepicker />', () => {
 
         cy.window().then((win) => {
             ReactDOM.render(
-                <DatepickerTestWrapper
+                <win.Datepicker
                     selected={chosenDate}
-                    win={win}
+                    dateFormat="dd.MM.yyyy"
                 />,
                 win.document.querySelector(rootToMountSelector)
             );
@@ -101,7 +83,7 @@ context('<Datepicker />', () => {
     it('opens calendar after clicking on text field.', () => {
         cy.window().then((win) => {
             ReactDOM.render(
-                <DatepickerTestWrapper win={win} />,
+                <win.Datepicker />,
                 win.document.querySelector(rootToMountSelector)
             );
         });
