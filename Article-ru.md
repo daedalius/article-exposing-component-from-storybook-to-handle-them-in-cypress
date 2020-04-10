@@ -1,7 +1,7 @@
 # Cypress + Storybook. Keeping test logic, data and component rendering in test. 
 td; dr:
-* You may expose the component reference from Storybook story to test it whatever you wish in Cypress.
-* Cypress turned up so powerfull for our team, so we do not have another utility to test React Components. We left React Testing Library, Enzyme and knobs in past.
+* Вы можете вынести ссылку на компонент из Storybook story чтобы протестировать его целиком силами Cypress (не разбивая логику теста на несколько частей).
+* Cypress показался нашей команде настолько мощным инструментом, что мы оставили в прошлом React Testing Library, Enzyme и knobs.
 
 Первые версии Cypress воспринимались как инструмент e2e-тестирования. Было любопытно наблюдать за ростом интереса front-end инженеров к теме, в которой всю жизнь правил Selenium. В то время типичное видео или статья, демонстрирующая возможности Cypress ограничивались блужданием по случайно выбранному сайту и заслуженными лестными отзывами об API для ввода данных (прямо в JavaScript!).
 
