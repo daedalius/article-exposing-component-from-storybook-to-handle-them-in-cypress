@@ -3,9 +3,10 @@ This is example of component testing approach when you expose the component refe
 ## Roles of each participant:
 
 Storybook:
-* hosts "storybook stories" that contain bundled react components
+* hosts "storybook stories" that contain bundled react components to test
 * provides real non-synthetic environment to run tests
 * each "story" expose one component in window (to retrieve it in Cypress)
+* each "story" expose a mount point (to mount a component in test)
 * able to open each component in isolation at fullscreen
 Look at "testing-story" as at shooting range. Please, run another instance of Storybook for your component library or pages.
 
@@ -18,9 +19,9 @@ Cypress:
 * provides UI where you see how your test is going
 
 ## I have Jest and React Testing Library! Tell me where am I wrong?
-* Because unit-test libraries run component tests in synthetic environment. It is a little bit faster, but limits feature coverage.
-* Because unit-test libraries run component tests from developers perspective while trying to emulates input events.
-* Because you write component tests via unit-test libraries blindly.
+* Unit-test libraries run component tests in synthetic environment. It is a little bit faster, but limits feature coverage.
+* Unit-test libraries run component tests from developers perspective while trying to emulates input events.
+* You write component tests via unit-test libraries in blindly and painful way. Accept that.
 
 ## Why not to use cypress-react-unit-test then? Why do we need Storybook?
 I have no doubts - it is our future to test components.
