@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "cypress": "cypress open --config integrationFolder=src,testFiles=**/*.component.test.jsx",
-    "storybook": "start-storybook"
+    "storybook": "start-storybook --port 12345"
   },
   "repository": {
     "type": "git",
