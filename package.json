@@ -4,8 +4,11 @@
   "description": "This is example of component testing approach when you expose the component reference from Storybook story to test it whatever you wish in Cypress.",
   "main": "index.js",
   "scripts": {
-    "cypress": "cypress open --config integrationFolder=src,testFiles=**/*.component.test.jsx",
-    "storybook": "start-storybook --port 12345"
+    "cypress": "cypress open --config integrationFolder=src,testFiles=**/*.component.test.jsx,video=false",
+    "storybook": "start-storybook --port 12345",
+    "components-tests": "cross-env STORYBOOK_TARGET=components-tests start-storybook -p 12345 --ci",
+    "cy-components-test_auto": "./node_modules/.bin/cypress run --browser chrome --config integrationFolder=src,testFiles=**/*.component.test.jsx,video=false",
+    "component-unit-tests": "concurrently --success first --kill-others \"npm run components-tests\" \"wait-on http://localhost:12345 && npm run cy-components-test_auto\""
   },
   "repository": {
     "type": "git",
@@ -28,9 +31,12 @@
     "@babel/preset-react": "^7.9.4",
     "@storybook/react": "^5.3.18",
     "babel-loader": "^8.1.0",
+    "concurrently": "^5.1.0",
+    "cross-env": "^7.0.2",
     "css-loader": "^3.5.1",
     "cypress": "^4.3.0",
     "style-loader": "^1.1.3",
+    "wait-on": "^4.0.2",
     "webpack": "^4.42.1"
   }
 }
