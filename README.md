@@ -1,5 +1,18 @@
 This is example of component testing approach when you expose the component reference from Storybook story to test it whatever you wish in Cypress.
 
+# How to run
+## CI/CD version 
+```
+npm run test
+```
+## Debug tests
+```
+npm run storybook
+```
+```
+npm run cypress
+```
+
 ## Roles of each participant:
 
 Storybook:
@@ -26,13 +39,13 @@ Cypress:
 ## Why not to use cypress-react-unit-test then? Why do we need Storybook?
 I have no doubts - it is our future to test components.
 
-But now...
-It has some tricky architecture that runs component bundle and environment in two iframes. And sometimes it limits you. 
-Example: Imagine that you have a component to test that should look at document.activeElement. This reference in Cypress test run will always point at document.body (because of iframes limitations or implementation issues).
+But now...  
+It has some tricky architecture that runs component bundle and environment in two iframes. And sometimes it limits you.  
+Example: Imagine that you have a component to test that should look at document.activeElement. This reference in Cypress test run will always point at document.body (because of iframes limitations or implementation issues).  
 Also it has a lot of work to be done. 
 Hope that Gleb Bahmutov and the Cypress team will make it worked 🤞
 
 ## Should I migrate all the tests that written on Jest / React Testing Library?
 * If you use tests as a development environment - Yes!
 * If you look at tests as at documentation - Yes.
-* If you really write unit-tests to cover things that too close to implementation and react-lifecycle - ... i don't know. I haven't been writing such a code. Are you sure about the following the S-principle of SOLID? Maybe that code should be extracted and tested accordingly?
+* If you really write unit-tests to cover things that too close to implementation and react-lifecycle - ... I don't know. I haven't been writing such a code. Are you sure about the following the S-principle of SOLID? Maybe that code should be extracted and tested accordingly?
