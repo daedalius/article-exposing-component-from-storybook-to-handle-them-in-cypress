@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom';
 /**
  * <Popup />
  * * becomes hidden after being shown when showed=false passed.
+ * * closes via method call.
  */
 
 context('<Popup />', () => {
@@ -55,4 +56,28 @@ context('<Popup />', () => {
             .get(selectors.popupWindow)
             .should('not.be.visible');
     });
+
+    it('closes via method call.', () => {
+        // arrange
+        let popup = React.createRef();
+        cy.window().then((win) => {
+            popup = <win.Popup showed={true} ref={popup}/>;
+            cy.window().then((win) => {
+                ReactDOM.render(
+                    popup,
+                    win.document.querySelector(rootToMountSelector)
+                );
+            });
+        });
+
+        // act
+        cy.then(() => {
+            popup.ref.current.hide();
+        })
+
+        // assert
+        cy
+            .get(selectors.popupWindow)
+            .should('not.be.visible');
+    })
 })
