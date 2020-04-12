@@ -1,7 +1,7 @@
 # Cypress + Storybook. Keeping test scenario, data and component rendering in one place. 
 td; dr:
 * You may expose the component reference from Storybook story to test it whatever you wish in Cypress (without breaking testing logic into pieces).
-* Cypress turned up so powerfull for our team, so we do not have another utility which use js-dom under the hood.
+* Cypress turned up so powerfull for our team, so we do not have another utility that uses js-dom under the hood to test UI components.
 
 In the very begining Cypress feels like e2e testing tool. It was curious to look at rising interest of frontend-engineers to the topic where Selenium run the show. At that time any typical video or article about the power of Cypress was limited by wandering around the randomly chosen website and praising input API provided.  
 
