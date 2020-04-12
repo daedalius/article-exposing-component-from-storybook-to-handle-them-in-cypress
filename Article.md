@@ -1,19 +1,19 @@
-# Cypress + Storybook. Keeping test logic, data and component rendering in test. 
+# Cypress + Storybook. Keeping test scenario, data and component rendering in one place. 
 td; dr:
-* You may expose the component reference from Storybook story to test it whatever you wish in Cypress.
-* Cypress turned up so powerfull for our team, so we do not have another utility to test React Components. We left React Testing Library, Enzyme and knobs in past.
+* You may expose the component reference from Storybook story to test it whatever you wish in Cypress (without breaking testing logic into pieces).
+* Cypress turned up so powerfull for our team, so we do not have another utility which use js-dom under the hood.
 
-Первые версии Cypress воспринимались как инструмент e2e-тестирования. Было любопытно наблюдать за ростом интереса front-end инженеров к теме, в которой всю жизнь правил Selenium. В то время типичное видео или статья, демонстрирующая возможности Cypress ограничивались блужданием по случайно выбранному сайту и заслуженными лестными отзывами об API для ввода данных (прямо в JavaScript!).
+In the very begining Cypress feels like e2e testing tool. It was curious to look at rising interest of frontend-engineers to the topic where Selenium run the show. At that time any typical video or article about the power of Cypress was limited by wandering around the randomly chosen website and praising input API provided.  
 
-Многие из нас догадались использовать Cypress для тестирования компонентов в изоляции предоставляемой такими средами как Storybook/Styleguidist/Docz. Хороший пример - статья Stefano Magni "Testing a Virtual List component with Cypress and Storybook". В ней предлагается создать Storybook Story, разместить в ней компонент и поместить в глобальную перменную данные, которые будут полезны для теста. Этот подход хорош, но в нём тест разрывается между Storybook и Cypress. Если у нас много компонентов, такие тесты будет сложно читать и поддерживать.
+Many of us have chosen Cypress as a tool to test components hosted via Storybook/Styleguidist/Docz.The good example - Stefano Magni article. He suggests to create Storybook Story, put component there and expose important data to the global variable in order to have an access in test. Nice approach actually, but test becomes broken into the pieces between Storybook and Cypress.  
 
-В этой статье я попытаюсь показать, как пойти чуть дальше и взять максимум от возможности писать на JavaScript в теле тестов Cypress. Для того чтобы увидеть как это работает, прошу загрузить исходный код по адресу https://github.com/daedalius/article-exposing-component-from-storybook-to-handle-them-in-cypress и выполнить команды **npm i** и **npn run test**.
+Here I'd like to show how to go a little bit further and get the most out of environment that Cypress provides. To see it in action, you may download the source code from my Github and execute then **npm i** and **npm run test** in console.
 
-Представим, что мы пишем адаптер для существующего компонента Datepicker и хотим покрыть его тестами. 
+
+Okay, let's start. Imagine that we are writing an adaptor for existing Datepicker component to use it across all company websites. We don't want to accidentally break anything, so we have to cover it by tests.
 
 ## Storybook
-Со стороны Storybook всё, что нам нужно - пустая Story в которой в глобальной переменной сохраняется ссылка на тестируемый компонент. Чтобы не быть совсем бесполезной, эта Story нам отрисует один DOM-узел. Его роль - предоставить место под полигон, на котором Cypress будет тестировать целевой компонент.
-
+All we need from Storybook - an empty Story that saves reference to the testing component in global variable. In order not to be so useless this Story renders the single DOM node. This node will be our war zone inside the test.
 
 ```jsx
 import React from 'react';
@@ -35,10 +35,10 @@ export const emptyStory = () => {
 };
 
 ```
-Мы закончили со Storybook. Теперь переместим всё внимание на Cypress.
+Okay, we've finished with Storybook. Let's take a look at Cypress.
 
 ## Cypress
-Я предпочитаю начинать работу над компонентом или покрытие его тестами с перечисления тест-кейсов. После того как мы определились с покрытием, получаем следующую заготовку под тест, который исполнит Cypress:
+Personally, I like to getting started with test-cases enumeration. Seems we have next test structure:
 
 ```jsx
 /// <reference types="cypress" />
@@ -65,54 +65,54 @@ context('<Datepicker />', () => {
 })
 ```
 
-Для проведения теста нужна среда. Вспоминаем о только что развернутом Storybook. Перейдем напрямую к пустой Story, открыв её в новом окне кликнув по кнопке "Open canvas in new tab" на sidebar. Скопируем URL и нацелим туда Cypress:
+Fine. We have to run these test in some environment. Open the Storybook, go directly to the empty Story by clicking at "Open canvas in new tab" button in sidebar. Copy that URL and make Cypress visit it:
 ```jsx
-    const rootToMountSelector = '#component-test-mount-point';
+const rootToMountSelector = '#component-test-mount-point';
 
-    before(() => {
-        cy.visit('http://localhost:12345/iframe.html?id=datepicker--empty-story');
-        cy.get(rootToMountSelector);
-    });
+before(() => {
+    cy.visit('http://localhost:12345/iframe.html?id=datepicker--empty-story');
+    cy.get(rootToMountSelector);
+});
 ```
 
-Как вы могли догадаться, мы будем рендерить интересующее нас состояние компонента в каждом тесте в одном и том же div. Чтобы тесты не влияли друг на друга, нужно размонтировать этот компонент после каждого теста. Добавим код очистки:
+As you may guessed, in order to test we are going to render all components states in the same \<div /\> with id=component-test-mount-point. So that the tests do not affect each other, we must unmount any component here before the next test execution. Let's add some cleanup code:
 ```jsx
-    afterEach(() => {
-        cy.document()
-            .then((doc) => {
-                ReactDOM.unmountComponentAtNode(doc.querySelector(rootToMountSelector));
-            });
-    });
-```
-
-Попробуем написать тест. Достанем ссылку на компонент и отрисуем его на странице:
-```jsx
-    const selectors = {
-        innerInput: '.react-datepicker__input-container input',
-    };
-
-    it('renders text field.', () => {
-        cy.window().then((win) => {
-            ReactDOM.render(
-                <win.Datepicker />,
-                win.document.querySelector(rootToMountSelector)
-            );
+afterEach(() => {
+    cy.document()
+        .then((doc) => {
+            ReactDOM.unmountComponentAtNode(doc.querySelector(rootToMountSelector));
         });
-
-        cy
-            .get(selectors.innerInput)
-            .should('be.visible');
-    });
+});
 ```
 
-Вы чувствуете это? Ничто не останавливает нас передать в компонент любой props. Любое состояние. Любые данные. И всё теперь в одном месте - в Cypress!
+Now we are ready to write the test. Retrieve the component reference, render the component and make some assertions:
+```jsx
+const selectors = {
+    innerInput: '.react-datepicker__input-container input',
+};
 
-## Тесты в несколько этапов, тестирование с обёрткой
-Иногда компоненты содержат логику, которая исполняется при изменении props. Для примера возьмем \<Popup /\> c props по имени showed.
-Когда showed=true, \<Popup /\> видим. При изменении showed c true на false, \<Popup /\> должен скрыться. Как это протестировать?
+it('renders text field.', () => {
+    cy.window().then((win) => {
+        ReactDOM.render(
+            <win.Datepicker />,
+            win.document.querySelector(rootToMountSelector)
+        );
+    });
 
-Такие задачи элементарно решаются императивно, однако в случае с декларативным React нам нужно что-то придумать. 
-В нашей команде мы обычно создаём вспомогательный компонент со state. В данном случае state это boolean, отвечающий за showed props.
+    cy
+        .get(selectors.innerInput)
+        .should('be.visible');
+});
+```
+
+Do you see that? Nothing stops us from passing any props or data to the component directly! It's all in one place now - in Cypress!
+
+## Testing in few steps with wrapper
+Sometimes we'd like to test that component bechaves predictable according to changing props.  
+Examine \<Popup /\> component with "showed" props. When "showed" is true, \<Popup \/> is visible. After that, changing "showed" to "false", \<Popup \/> should becomes hidden. How to test that transition?
+
+Those problems easy to handle in imperative way, but in case of declarative React we need to come up with something.
+In our team we use additional wrapper component with state to handle it. The state here is boolean, it response for "showed" props.
 ```jsx
 let setPopupTestWrapperState = null;
 const PopupTestWrapper = ({ showed, win }) => {
@@ -121,9 +121,8 @@ const PopupTestWrapper = ({ showed, win }) => {
     return <win.Popup showed={isShown} />
 }
 ```
-> Совет: Если hook у вам не завёлся (такое бывает) или вы против вызова setState извне компонента, перепишите на обычный class.
 
-Применив написанную обёртку, завершим работу над тестом:
+Now we about to finish the test:
 ```jsx
 it('becomes hidden after being shown when showed=false passed.', () => {
     // arrange
@@ -146,40 +145,72 @@ it('becomes hidden after being shown when showed=false passed.', () => {
         .should('not.be.visible');
 });
 ```
+Tip: If a such hook haven't worked or you dislike calling the hook outside the component - rewrite the wrapper via simple class.
 
-Вот и всё.
 
-## Подытог: роли каждого из участников
+## Testing component methods
+Actually, I've never written such a test. The idea has come up while writing this article. Probably it may be useful to test a component in unit test style.  
+
+However you may easily to do it in Cypress. Just create a ref to the component before rendering. It is worth mentioning that the ref gives access to state and other elements of the component.  
+
+I've added "hide" metod to \<Popup /\> which make it hidden forcibly (example for the sake of example). The following test looks like this:
+```jsx
+// arrange
+let popup = React.createRef();
+cy.window().then((win) => {
+    // initial state - popup is visible
+    popup = <win.Popup showed={true} ref={popup}/>;
+
+    cy.window().then((win) => {
+        ReactDOM.render(popup, win.document.querySelector(rootToMountSelector));
+    });
+});
+
+// act
+cy.then(() => {
+    popup.ref.current.hide();
+})
+
+// assert
+cy
+    .get(selectors.popupWindow)
+    .should('not.be.visible');
+```
+
+Still, In my mind, calling React-component method is a legal hack that should be used only if the problem is very difficult to solve declaratively.  
+
+
+## To sum it up: roles of each participant
 Storybook:
-* Поднимает stories содержащие собранные React компоненты для целей тестирования.
-* Предоставляет реальную несинтетическую среду для исполнения тестов.
-* Каждая story устанавливает глобальную ссылку на компонент в window (чтобы затем получить её в Cypress)
-* Каждая story предоставляет точку монтирования, в которую затем будут рендерится компонент (при исполнении теста).
-* Способен открыть каждый компонент в изоляции в полном экране. Относитесь к этому как к испытательному полигону для тестовых Stories.
-> Совет: Используйте отдельный экземпляр Storybook для библиотеки компонентов. Не смешивайте тестовые stories с остальными.
+* Hosts "storybook stories" that contain bundled react components for test purpose.
+* Provides real non-synthetic environment to run tests.
+* Each "story" expose one component in global variable (to retrieve it in Cypress later).
+* Each "story" expose a component mount point (to mount a component in test).
+* Able to open each component in isolation at fullscreen.
+> Tip: Please, run another instance of Storybook for your component library or pages.
 
 Cypress:
-* Содержит и запускает тесты
-* Переходит к отдельным stories, получает ссылку на компонент.
-* Отрисовывает компонент согласно логике теста с нужными данными и условиями (например, в мобильном разрешении).
-* Предоставляет UI для визуализации процесса тестирования.
+* Contains and runs tests and Javascript.
+* Visits isolated component Stories, retrieves component reference from the global variable.
+* Renders component according to testing needs (with any data or test conditions such as mobile resolution).
+* Provides UI to you see how your tests are going.
 
-## Заключение
-В этом разделе хотелось бы выразить личное мнение и позицию команды по некоторым вопросам, которые могли возникнуть у читателя. Написанное ниже не претендует на истину, может отличаться от реальности, а так же содержать арахис.
+## Conclusion
+Here I'd like to express my personal opinion and my collegues position about possible questions that may be appear during the reading. Written below doesn't pretend to be true, may differ from reality and contain nuts.
 
-### На проекте я использую связку Jest с React Testing Library. В чем я себя ограничиваю?
-* JSDOM это синтетическая среда, ограничивающая охват покрытия.  
-* Не очень выходит работать с JSDOM так как это делал бы пользователь. Особенно когда речь заходит об имитации событий ввода.  
-* Вы пишите юнит-тесты вслепую. Но зачем?  
+### My test utils use js-dom under the hood. Do I limit myself?
+* Yes. Js-dom is synthetic environment. Separated DOM is not a real browser.
+* It doesn't really work out to act with js-dom as it user do. Especially when it comes to simulating input events.  
+* How much confidence can you get from a written unit test if a component can be broken in CSS due to one incorrect z-index? If the component is tested by Cypress, you will see an error.
+* You write unit tests blindly. But why? 
 
-### Стоит ли мне отказаться от связки Jest + React Testing Library?
-Если вы воспринимаете тесты как среду для разработки - точно Да!  
-Если вы воспринимаете тесты как показательную документацию - Да.  
-Если вы пишете "низкоуровневые" юнит-тесты с покрытием деталей реализации и особенностей работы react-lifecycle - ... Не знаю. Я не пишу такой код. Вы уверены, что следуете первому принципу SOLID? Может быть, стоит что-то вынести из компонента и тестировать отдельно?  
+### Should I choose the approach suggested?
+* If you use tests as a development environment - definitely, Yes!
+* If you look at tests as at **live** documentation - Yes.
+* If you really write unit-tests to cover things that too close to implementation and react-lifecycle - ... I don't know. I haven't been writing such a test for long time. Are you sure that the covered logic is component responsibility? Maybe that logic should be extracted and tested accordingly?
 
-### Почему бы просто не использовать cypress-react-unit-test? Зачем мне Storybook?
-Вне сомнений - за этим подходом будущее.  
-Но сейчас...  
-Cypress имеет довольно хитрую архитектуру, запускающую собранный React и код в двух iframe. Иногда это ограничивает охват тестирования.  
-Например: Представьте компонент который обращается к document.activeElement. При запуске в Cypress эта ссылка всегда будет указывать на document.body (из за особенностей iframe или нюансов реализации).
-И это далеко не единственная проблема. Надеюсь, Gleb Bahmutov и команда Cypress все же справятся с этими трудностями 🤞
+### Why not to use cypress-react-unit-test then? Why do we need Storybook?
+I have no doubts - it is our future to test components. There will be no need to maintain a separate instance of the Storybook, all tests will be entirely under the responsibility of Cypress, the configuration will be simplified, etc.  
+But now tool has some problems that makes the provided environment incomplete for running tests. Hope that Gleb Bahmutov and the Cypress team will make it worked 🤞
+
+PS: Our team opinion that the suggested approach allows us to review the monopoly of tools using js-dom. What do you think about it?
