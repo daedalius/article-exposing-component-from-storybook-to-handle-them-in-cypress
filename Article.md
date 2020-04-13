@@ -1,5 +1,5 @@
 # Cypress + Storybook. Keeping test scenario, data and component rendering in one place. 
-td; dr:
+tl; dr:
 * You may expose the component reference from Storybook Story to test it whatever you wish in Cypress (without breaking testing logic into pieces).
 * Cypress turned up so powerful for our team, so we do not have another utility that uses js-dom under the hood to test UI components.
 
