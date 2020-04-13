@@ -108,10 +108,10 @@ Do you see that? Nothing stops us from passing any props or data to the componen
 
 ## Testing in a few steps with wrapper
 Sometimes we'd like to test that component behaves predictably according to changing props.  
-Examine \<Popup /\> component with "showed" props. When "showed" is true, \<Popup \/> is visible. After that, changing "showed" to "false", \<Popup \/> should becomes hidden. How to test that transition?
+Examine \<Popup /\> component with "showed" props. When "showed" is true, \<Popup \/> is visible. After that, changing "showed" to "false", \<Popup \/> should become hidden. How to test that transition?
 
-Those problems easy to handle in an imperative way, but in case of declarative React we need to come up with something.
-In our team, we use additional wrapper component with state to handle it. The state here is boolean, it responses to "showed" props.
+Those problems are easy to handle in an imperative way, but in case of declarative React we need to come up with something.
+In our team, we use an additional wrapper component with state to handle it. The state here is boolean, it responses to "showed" props.
 ```jsx
 let setPopupTestWrapperState = null;
 const PopupTestWrapper = ({ showed, win }) => {
@@ -145,7 +145,7 @@ it('becomes hidden after being shown when showed=false passed.', () => {
         .should('not.be.visible');
 });
 ```
-Tip: If a such hook haven't worked or you dislike calling the hook outside the component - rewrite the wrapper via simple class.
+Tip: If such hook haven't worked or you dislike calling the hook outside the component - rewrite the wrapper via simple class.
 
 
 ## Testing component methods
@@ -208,7 +208,7 @@ Here I'd like to express my personal opinion and my colleagues' position about p
 * If you look at tests as at **live** documentation - Yes.
 * If you really write unit-tests to cover things that too close to implementation and react-lifecycle - ... I don't know. I haven't been writing such a test for a long time. Are you sure that the covered logic is component responsibility? Maybe that logic should be extracted and tested accordingly?
 
-### Why not to use cypress-react-unit-test then? Why do we need Storybook?
+### Why not use cypress-react-unit-test then? Why do we need Storybook?
 I have no doubts - it is our future to test components. There will be no need to maintain a separate instance of the Storybook, all tests will be entirely under the responsibility of Cypress, the configuration will be simplified, etc.  
 But now the tool has some problems that make the environment provided incomplete for running tests. Hope that Gleb Bahmutov and the Cypress team will make it worked 🤞
 
