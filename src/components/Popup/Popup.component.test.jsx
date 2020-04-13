@@ -61,18 +61,15 @@ context('<Popup />', () => {
         // arrange
         let popup = React.createRef();
         cy.window().then((win) => {
-            popup = <win.Popup showed={true} ref={popup}/>;
-            cy.window().then((win) => {
-                ReactDOM.render(
-                    popup,
-                    win.document.querySelector(rootToMountSelector)
-                );
-            });
+            ReactDOM.render(
+                <win.Popup showed={true} ref={popup} />,
+                win.document.querySelector(rootToMountSelector)
+            );
         });
 
         // act
         cy.then(() => {
-            popup.ref.current.hide();
+            popup.current.hide();
         })
 
         // assert
