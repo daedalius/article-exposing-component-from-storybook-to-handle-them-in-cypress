@@ -145,7 +145,7 @@ it('becomes hidden after being shown when showed=false passed.', () => {
         .should('not.be.visible');
 });
 ```
-Tip: If such hook haven't worked or you dislike calling the hook outside the component - rewrite the wrapper via simple class.
+Tip: If such hook hasn't worked or you dislike calling the hook outside the component - rewrite the wrapper via simple class.
 
 
 ## Testing component methods
@@ -153,7 +153,7 @@ Actually, I've never written such a test. The idea has come up while writing thi
 
 However, you may easily do it in Cypress. Just create a ref to the component before rendering. It is worth mentioning that the ref gives access to state and other elements of the component.  
 
-I've added "hide" metod to \<Popup /\> which makes it hidden forcibly (example for the sake of example). The following test looks like this:
+I've added "hide" method to \<Popup /\> which makes it hidden forcibly (example for the sake of example). The following test looks like this:
 ```jsx
 it('closes via method call.', () => {
     // arrange
@@ -181,7 +181,7 @@ it('closes via method call.', () => {
 
 ## To sum it up: the roles of each participant
 Storybook:
-* Hosts Storybook Stories that contain bundled react components for test purpose.
+* Hosts Storybook Stories that contain bundled react components for test purposes.
 * Provides a real non-synthetic environment to run tests.
 * Each Story exposes one component in the global variable (to retrieve it in Cypress later).
 * Each Story exposes a component mount point (to mount a component in test).
@@ -192,7 +192,7 @@ Cypress:
 * Contains and runs tests and Javascript.
 * Visits isolated component Stories, retrieves component reference from the global variable.
 * Renders component according to testing needs (with any data or test conditions such as mobile resolution).
-* Provides UI to you see how your tests are going.
+* Gives you super handy UI so you can see how your tests are going.
 
 ## Conclusion
 Here I'd like to express my personal opinion and my colleagues' position about possible questions that may appear during the reading. Written below doesn't pretend to be true, may differ from reality and contain nuts.
@@ -206,7 +206,7 @@ Here I'd like to express my personal opinion and my colleagues' position about p
 ### Should I choose the approach suggested?
 * If you use tests as a development environment - definitely, Yes!
 * If you look at tests as at **live** documentation - Yes.
-* If you really write unit-tests to cover things that too close to implementation and react-lifecycle - ... I don't know. I haven't been writing such a test for a long time. Are you sure that the covered logic is component responsibility? Maybe that logic should be extracted and tested accordingly?
+* If you really write unit-tests to cover things that too close to implementation and React-lifecycle - ... I don't know. I haven't been writing such a test for a long time. Are you sure that the covered logic is component responsibility? Maybe that logic should be extracted and tested accordingly?
 
 ### Why not use cypress-react-unit-test then? Why do we need Storybook?
 I have no doubts - it is our future to test components. There will be no need to maintain a separate instance of the Storybook, all tests will be entirely under the responsibility of Cypress, the configuration will be simplified, etc.  
