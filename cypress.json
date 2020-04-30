@@ -1,1 +1,8 @@
-{}
+{
+  "experimentalComponentTesting": true,
+  "componentFolder": "src",
+  "testFiles": "**/*spec.*",
+  "env": {
+    "webpackFilename": "webpack.config.js"
+  }
+}
